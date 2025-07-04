@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMART HOME Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Custom CSS to override/enhance Tailwind and match logo's color scheme */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f0f0; /* Light background color from logo image */
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
+
+    .sidebar {
+      width: 100px; /* Much narrower sidebar */
+      background-color: #2c3e50; /* Dark blue, maintaining contrast */
+      color: white;
+      padding: 24px 0; /* Adjust padding for narrow width */
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0; /* Prevent shrinking */
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center logo horizontally */
+    }
+
+    .sidebar .logo-container {
+      margin-bottom: 30px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center the text within the narrow sidebar */
+      height: 80px; /* Adjusted height for the logo container */
+      width: 100%;
+      padding: 0; /* Remove padding as it's centered */
+    }
+
+    .sidebar .logo-container h2 {
+      font-size: 1.8rem; /* Slightly smaller font for narrow sidebar */
+      font-weight: 700;
+      margin: 0;
+      line-height: 1;
+      display: flex;
+      flex-wrap: wrap; /* Allow letters to wrap if sidebar gets too narrow */
+      justify-content: center; /* Center letters if wrapped */
+    }
+
+    .sidebar .logo-container h2 span {
+      transition: color 0.3s ease;
+    }
+
+    .sidebar .logo-container h2 .color-d { color: #FFC107; } /* Orange */
+    .sidebar .logo-container h2 .color-o { color: #E91E63; } /* Pink */
+    .sidebar .logo-container h2 .color-m { color: #00A3A3; } /* Teal */
+    .sidebar .logo-container h2 .color-u { color: #E74C3C; } /* Red-Orange */
+    .sidebar .logo-container h2 .color-s { color: #27AE60; } /* Green */
+
+
+    /* Sidebar navigation is now moved to horizontal nav */
+    .sidebar nav {
+      display: none; /* Hide original sidebar nav */
+    }
+
+    .dashboard-main {
+      flex-grow: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px; /* Reduced margin-bottom */
+      flex-wrap: wrap;
+      gap: 16px;
+      background-color: #ffffff;
+      padding: 10px 25px; /* Minimized padding for smaller height */
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .header h1 {
+      font-size: 1.6rem; /* Slightly smaller font for header title */
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .header .date-time {
+      font-size: 0.9rem; /* Slightly smaller font */
+      color: #7f8c8d;
+      font-weight: 500;
+    }
+
+    .header .search-bar {
+      position: relative;
+      flex-grow: 1;
+      max-width: 250px; /* Reduced search bar width */
+    }
+
+    .header .search-bar input {
+      width: 100%;
+      padding: 8px 15px 8px 35px; /* Adjusted padding */
+      border: 1px solid #bdc3c7;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      color: #34495e;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .header .search-bar input:focus {
+      border-color: #E91E63; /* Pink focus from logo */
+    }
+
+    .header .search-bar svg {
+      position: absolute;
+      left: 10px; /* Adjusted icon position */
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px; /* Slightly smaller icon */
+      height: 18px;
+      fill: #7f8c8d;
+    }
+
+    /* New Horizontal Navigation Bar */
+    .main-nav-horizontal {
+      background-color: #ffffff;
+      padding: 10px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-around; /* Distribute items evenly */
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      gap: 10px; /* Space between nav items */
+    }
+
+    .main-nav-horizontal ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center; /* Center items if wrapped */
+      gap: 10px;
+    }
+
+    .main-nav-horizontal li {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 0.9rem; /* Smaller font for horizontal nav */
+      font-weight: 500;
+      color: #34495e; /* Default text color */
+    }
+
+    .main-nav-horizontal li:hover,
+    .main-nav-horizontal li.active {
+      background-color: #E91E63; /* Pink for active/hover */
+      color: white;
+    }
+
+    .main-nav-horizontal li svg {
+      margin-right: 8px; /* Reduced margin */
+      width: 18px; /* Smaller icon */
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .room-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .room-tabs button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background-color: #ecf0f1; /* Light grey */
+      color: #7f8c8d;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .room-tabs button.active {
+      background-color: #E74C3C; /* Red-orange from logo for active tab */
+      color: white;
+    }
+ 
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background-color: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);  
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #34495e;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #7f8c8d;
+      margin-bottom: 8px;
+    }
+
+    .card strong {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .temp-card .temp-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .temp-card.bedroom .temp-circle { background-color: #E91E63; } /* Pink from logo */
+    .temp-card.bathroom .temp-circle { background-color: #00A3A3; } /* Teal from logo */
+    .temp-card.living-room .temp-circle { background-color: #FFC107; } /* Orange from logo */
+
+    .status-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .status-card .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .status-card.leak .icon-wrapper { background-color: #E74C3C; } /* Red-orange from logo */
+    .status-card.locked .icon-wrapper { background-color: #27AE60; } /* Green from logo */
+
+    .device-control-card {
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .device-control-card .device-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .device-control-card.on {
+      background-color: #FFC107; /* Orange for ON from logo */
+      color: #34495e;
+    }
+
+    .device-control-card.off {
+      background-color: #ecf0f1; /* Light grey for OFF */
+      color: #7f8c8d;
+    }
+
+    .camera-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+      object-fit: cover;
+      height: 180px; /* Fixed height for consistent camera view */
+    }
+
+    .humidifier-card .circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(#E91E63 70%, #ecf0f1 0%); /* Pink for humidifier dial from logo */
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 7-00;
+      color: #2c3e50;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .humidifier-card input[type=range] {
+      width: 100%;
+      margin-top: 15px;
+      height: 10px;
+      background: #ecf0f1;
+      border-radius: 5px;
+      outline: none;
+      opacity: 0.8;
+      transition: opacity .2s;
+    }
+
+    .humidifier-card input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #E91E63; /* Pink for slider thumb from logo */
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .energy-usage-card {
+      grid-column: span 2; /* Span two columns for the chart */
+      min-height: 250px; /* Ensure enough height for the chart */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa; /* Light background for chart area */
+      border: 1px solid #eee;
+    }
+
+    .energy-usage-card .chart-placeholder {
+      width: 90%;
+      height: 180px;
+      background: repeating-linear-gradient(
+        45deg,
+        #f0f0f0,
+        #f0f0f0 10px,
+        #e0e0e0 10px,
+        #e0e0e0 20px
+      ); /* Placeholder pattern */
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .users-card .user-avatars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .users-card .user-avatars img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #E91E63; /* Pink border from logo */
+      object-fit: cover;
+    }
+
+    /* Settings Section */
+    .settings-section {
+      background-color: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: none; /* Hidden by default */
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-section h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-top: 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 16px;
+    }
+
+    .settings-group {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ecf0f1;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+
+    .settings-group h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #34495e;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-item label {
+      font-weight: 500;
+      color: #555;
+      flex-grow: 1;
+    }
+
+    .setting-item input[type="text"],
+    .setting-item input[type="email"],
+    .setting-item input[type="password"],
+    .setting-item select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      width: 200px; /* Consistent width for inputs */
+      max-width: 100%;
+    }
+
+    .setting-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #E91E63; /* Pink accent from logo */
+    }
+
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .settings-actions button {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .settings-actions button.save {
+      background-color: #27AE60; /* Green from logo */
+      color: white;
+    }
+
+    .settings-actions button.save:hover {
+      background-color: #229954;
+      transform: translateY(-2px);
+    }
+
+    .settings-actions button.cancel {
+      background-color: #E74C3C; /* Red-orange from logo */
+      color: white;
+    }
+
+    .settings-actions button.cancel:hover {
+      background-color: #D6392B;
+      transform: translateY(-2px);
+    }
+
+    /* Auth Section Styling (Users Page) */
+    .auth-section {
+      background-color: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: none; /* Hidden by default, set to flex in JS for initial load */
+      flex-direction: column;
+      gap: 30px;
+      max-width: 550px; /* Slightly wider for better form layout */
+      margin: 0 auto; /* Center the auth section */
+      width: 100%;
+      text-align: center; /* Center overall content */
+    }
+
+    .auth-section h2 {
+      font-size: 2rem; /* Larger heading */
+      font-weight: 700;
+      color: #2c3e50;
+      margin-top: 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 16px;
+    }
+
+    .auth-form-container {
+      display: flex;
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      gap: 30px; /* Space between login and register forms */
+      justify-content: center; /* Center forms horizontally */
+    }
+
+    .auth-form {
+      flex: 1; /* Allow forms to grow and shrink */
+      min-width: 250px; /* Minimum width for each form */
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      border: 1px solid #f5f5f5; /* Subtle border for forms */
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle shadow for forms */
+      background-color: #fdfdfd;
+    }
+
+    .auth-form h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #34495e;
+      margin-top: 0;
+      margin-bottom: 20px; /* More space below heading */
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .auth-form label {
+      font-weight: 500; /* Slightly lighter weight */
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+      text-align: left; /* Align labels to the left */
+    }
+
+    .auth-form input[type="text"],
+    .auth-form input[type="email"],
+    .auth-form input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box; /* Include padding in width */
+      font-family: 'Inter', sans-serif; /* Ensure Inter font for inputs */
+      color: #34495e;
+    }
+
+    .auth-form input::placeholder {
+      color: #999;
+    }
+
+    .auth-form button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 20px; /* More space above buttons */
+    }
+
+    .auth-form button.login-btn {
+      background-color: #E91E63; /* Pink from logo */
+      color: white;
+    }
+
+    .auth-form button.login-btn:hover {
+      background-color: #D81B60;
+      transform: translateY(-2px);
+    }
+
+    .auth-form button.register-btn {
+      background-color: #00A3A3; /* Teal from logo */
+      color: white;
+    }
+
+    .auth-form button.register-btn:hover {
+      background-color: #008C8C;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 80px; /* Even narrower sidebar on tablet */
+        padding: 16px 0;
+      }
+      .sidebar .logo-container h2 {
+        font-size: 1.5rem; /* Smaller font for DOMUS */
+      }
+      .dashboard-main {
+        padding: 24px;
+      }
+      .header {
+        padding: 8px 20px; /* Smaller header on tablet */
+      }
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      .header .search-bar {
+        max-width: 200px;
+      }
+      .main-nav-horizontal {
+        padding: 8px 20px;
+      }
+      .main-nav-horizontal li {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+      .main-nav-horizontal li svg {
+        width: 16px;
+        height: 16px;
+      }
+      .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+      .energy-usage-card {
+        grid-column: span 1; /* On smaller screens, span 1 column */
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px 0;
+        flex-direction: row;
+        justify-content: center; /* Center logo horizontally when stacked */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      .sidebar .logo-container {
+        margin-bottom: 0;
+        margin-right: 0; /* Remove right margin for vertical stack */
+        height: auto;
+        padding-left: 0;
+      }
+      .sidebar .logo-container h2 {
+        font-size: 1.8rem; /* Revert to larger font for mobile header */
+      }
+      .main-nav-horizontal {
+        flex-direction: column; /* Stack nav items vertically on mobile */
+        align-items: center; /* Center stacked items */
+        padding: 10px 15px;
+        gap: 8px;
+      }
+      .main-nav-horizontal ul {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+      .main-nav-horizontal li {
+        width: 90%; /* Make list items take more width */
+        justify-content: center; /* Center content within list item */
+        font-size: 1rem;
+        padding: 10px 15px;
+      }
+      .main-nav-horizontal li svg {
+        margin-right: 10px;
+      }
+      .dashboard-main {
+        padding: 15px;
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 15px;
+      }
+      .header .search-bar {
+        width: 100%;
+        max-width: none;
+      }
+      .room-tabs {
+        justify-content: center;
+      }
+      .grid-container {
+        grid-template-columns: 1fr; /* Single column layout for very small screens */
+      }
+      .energy-usage-card {
+        grid-column: span 1;
+      }
+      .auth-section {
+        padding: 20px;
+        gap: 20px;
+      }
+      .auth-form-container {
+        flex-direction: column; /* Stack forms vertically on small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo-container">
+      <h2>
+        <span class="color-d">D</span><span class="color-o">O</span><span class="color-m">M</span><span class="color-u">U</span><span class="color-s">S</span>
+      </h2>
+    </div>
+    <!-- Navigation moved to main-nav-horizontal -->
+  </aside>
+
+  <main class="dashboard-main">
+    <!-- Header Bar -->
+    <div class="header" id="main-header">
+      <h1>Welcome to Your Smart Home</h1>
+      <div class="date-time" id="date-time-display">Today is Monday June 4 2022</div>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search rooms...">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+    </div>
+
+    <!-- Horizontal Navigation Bar -->
+    <nav class="main-nav-horizontal" id="main-nav-horizontal">
+      <ul>
+        <li class="active" data-section="dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-6h-8v10zm0-18v6h8V3h-8z"/></svg>
+          Dashboard
+        </li>
+        <li data-section="devices">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 4v2h-2V4h-2v2h-2V4h-2v2H8V4H6v2H4V4H2v16h20V4h-2zM4 18V8h16v10H4z"/></svg>
+          Devices
+        </li>
+        <li data-section="notifications">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          Notifications
+        </li>
+        <li data-section="users">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 17v2H8v-2c0-2.21 2.7-4 6-4s6 1.79 6 4zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Users
+        </li>
+        <li data-section="security">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          Security
+        </li>
+        <li data-section="settings">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.09-.73-1.71-.98l-.37-2.65c-.05-.24-.25-.42-.49-.42h-4c-.24 0-.44.18-.49.42l-.37 2.65c-.62.25-1.19.58-1.71.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.64-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.09.73 1.71.98l.37 2.65c.05.24.25.42.49.42h4c.24 0 .44-.18.49-.42l.37-2.65c.62-.25 1.19-.58 1.71-.98l2.49 1c.22.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+          Settings
+        </li>
+        <li data-section="sign-out">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+          Sign Out
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Dashboard Content Section -->
+    <section id="dashboard-content" style="display: none;">
+      <div class="room-tabs">
+        <button class="active" data-room-tab="Bedroom">Bedroom</button>
+        <button data-room-tab="Bathroom">Bathroom</button>
+        <button data-room-tab="Living room">Living room</button>
+        <button data-room-tab="Kitchen">Kitchen</button>
+        <button data-room-tab="Dining room">Dining room</button>
+        <button data-room-tab="Entrance">Entrance</button>
+      </div>
+
+      <div class="grid-container">
+        <!-- Temperature Cards -->
+        <div class="card temp-card bedroom">
+          <div class="temp-circle">23°C</div>
+          <p>Bedroom</p>
+          <h3>Temperature</h3>
+        </div>
+        <div class="card temp-card bathroom">
+          <div class="temp-circle">20°C</div>
+          <p>Bathroom</p>
+          <h3>Temperature</h3>
+        </div>
+        <div class="card temp-card living-room">
+          <div class="temp-circle">18°C</div>
+          <p>Living Room</p>
+          <h3>Temperature</h3>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="card status-card leak">
+          <div class="icon-wrapper">💧</div>
+          <div>
+            <h3>Leak Detected</h3>
+            <p>Main water pipe</p>
+          </div>
+        </div>
+        <div class="card status-card locked">
+          <div class="icon-wrapper">🔒</div>
+          <div>
+            <h3>All Doors Locked</h3>
+            <p>Security system active</p>
+          </div>
+        </div>
+
+        <!-- Device Control Cards -->
+        <div class="card device-control-card on" data-device="lights">
+          <div class="device-icon">💡</div>
+          <h3>Lights</h3>
+          <p>On</p>
+        </div>
+        <div class="card device-control-card off" data-device="garage">
+          <div class="device-icon">🚗</div>
+          <h3>Garage</h3>
+          <p>Off</p>
+        </div>
+
+        <!-- Humidity Card -->
+        <div class="card humidity-card">
+          <h3>Humidity</h3>
+          <p><strong id="humidity-display">33%</strong></p>
+          <p>Indoor air humidity</p>
+        </div>
+
+        <!-- Air Conditioning Card (now toggleable) -->
+        <div class="card device-control-card off" data-device="air-conditioning">
+          <div class="device-icon">❄️</div>
+          <h3>Air Conditioning</h3>
+          <p>Off</p>
+        </div>
+
+        <!-- Live Camera Card (link removed) -->
+        <div class="card camera-card">
+          <h3>Live Camera</h3>
+          <img src="https://placehold.co/300x180/E74C3C/ffffff?text=Live+Feed" alt="Live Camera Feed">
+          <p>Living Room Camera</p>
+        </div>
+
+        <!-- Humidifier Card (from previous request, integrated) -->
+        <div class="card humidifier-card">
+          <h3>Air Humidifier</h3>
+          <div class="circle">
+            <div id="dial-text">70%</div>
+          </div>
+          <input type="range" id="humidifierRange" min="0" max="100" value="70">
+        </div>
+
+        <!-- Energy Usage Card (link added) -->
+        <a href="https://www.eia.gov/energyexplained/use-of-energy/" target="_blank" class="card energy-usage-card">
+          <h3>Energy Usage</h3>
+          <div class="chart-placeholder">Chart Placeholder</div>
+          <p>Total: <strong>45.6 KWH</strong> this month</p>
+        </a>
+
+        <!-- Users Card -->
+        <div class="card users-card">
+          <h3>Users</h3>
+          <div class="user-avatars">
+            <img src="https://placehold.co/50x50/E91E63/ffffff?text=S" alt="Sandy">
+            <img src="https://placehold.co/50x50/00A3A3/ffffff?text=J" alt="John">
+            <img src="https://placehold.co/50x50/FFC107/ffffff?text=P" alt="Priya">
+          </div>
+          <p>Manage family access</p>
+        </div>
+
+        <!-- Notifications Control Card (new) -->
+        <div class="card device-control-card on" data-device="notifications-toggle">
+          <div class="device-icon">🔔</div>
+          <h3>Notifications</h3>
+          <p>On</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auth Section (Login/Register) -->
+    <section id="auth-section" class="auth-section">
+      <h2>Account Access</h2>
+
+      <div class="auth-form-container">
+        <div class="login-form auth-form">
+          <h3>Login</h3>
+          <form>
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" placeholder="Enter your email" required>
+
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+          </form>
+        </div>
+
+        <div class="register-form auth-form">
+          <h3>Register</h3>
+          <form>
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" placeholder="Enter your email" required>
+
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" placeholder="Create a password" required>
+
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+
+            <button type="submit" class="register-btn">Register</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings-section" class="settings-section" style="display: none;">
+      <h2>App Settings</h2>
+
+      <div class="settings-group">
+        <h3>General Settings</h3>
+        <div class="setting-item">
+          <label for="app-theme">App Theme</label>
+          <select id="app-theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label for="notifications-toggle-setting">Enable Notifications</label>
+          <input type="checkbox" id="notifications-toggle-setting" checked>
+        </div>
+        <div class="setting-item">
+          <label for="language-select">Language</label>
+          <select id="language-select">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Account Settings</h3>
+        <div class="setting-item">
+          <label for="user-email">Email Address</label>
+          <input type="email" id="user-email" value="sandy@example.com">
+        </div>
+        <div class="setting-item">
+          <label for="change-password">Change Password</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">Change</button>
+        </div>
+        <div class="setting-item">
+          <label for="two-factor-auth">Two-Factor Authentication</label>
+          <input type="checkbox" id="two-factor-auth">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Device Management</h3>
+        <div class="setting-item">
+          <label for="device-pairing">Pair New Device</label>
+          <button class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">Pair</button>
+        </div>
+        <div class="setting-item">
+          <label for="firmware-updates">Automatic Firmware Updates</label>
+          <input type="checkbox" id="firmware-updates" checked>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button class="cancel">Cancel</button>
+        <button class="save">Save Changes</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Global flag for login status
+    let isLoggedIn = false;
+
+    // Function to update time and date
+    function updateTimeAndDate() {
+      const dateTimeDisplay = document.getElementById('date-time-display');
+      const now = new Date();
+
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const formattedDate = now.toLocaleDateString('en-US', options);
+
+      dateTimeDisplay.textContent = `Today is ${formattedDate}`;
+    }
+    updateTimeAndDate(); // Call immediately to display on load
+    setInterval(updateTimeAndDate, 60000); // Update every minute
+
+    // Humidifier dial update logic
+    const humidifierRange = document.getElementById("humidifierRange");
+    const dial = document.querySelector(".humidifier-card .circle");
+    const dialText = document.getElementById("dial-text");
+    const humidityDisplay = document.getElementById("humidity-display");
+
+    humidifierRange.addEventListener("input", () => {
+      const value = parseInt(humidifierRange.value);
+      dial.style.background = `conic-gradient(#E91E63 ${value}%, #ecf0f1 0%)`; // Pink from logo
+      dialText.textContent = `${value}%`;
+      humidityDisplay.textContent = `${value}%`; // Update humidity display
+    });
+
+    // Device control card toggle (Lights, Garage, Air Conditioning, Notifications)
+    document.querySelectorAll('.device-control-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const pTag = card.querySelector('p');
+        if (card.classList.contains('on')) {
+          card.classList.remove('on');
+          card.classList.add('off');
+          pTag.textContent = 'Off';
+        } else {
+          card.classList.remove('off');
+          card.classList.add('on');
+          pTag.textContent = 'On';
+        }
+      });
+    });
+
+    // Get main content sections
+    const dashboardContent = document.getElementById('dashboard-content');
+    const settingsSection = document.getElementById('settings-section');
+    const authSection = document.getElementById('auth-section');
+    const mainHeader = document.getElementById('main-header');
+    const mainNavHorizontal = document.getElementById('main-nav-horizontal');
+    const mainNavListItems = document.querySelectorAll('.main-nav-horizontal li');
+
+    // Function to show a specific section and hide others
+    function showSection(sectionId) {
+        dashboardContent.style.display = 'none';
+        settingsSection.style.display = 'none';
+        authSection.style.display = 'none';
+
+        if (sectionId === 'dashboard') {
+            dashboardContent.style.display = 'block';
+            mainHeader.style.display = 'flex'; // Show header for dashboard
+            mainNavHorizontal.style.display = 'flex'; // Show horizontal nav for dashboard
+        } else if (sectionId === 'settings') {
+            settingsSection.style.display = 'flex';
+            mainHeader.style.display = 'flex'; // Show header for settings
+            mainNavHorizontal.style.display = 'flex'; // Show horizontal nav for settings
+        } else if (sectionId === 'users') { // This is the auth page
+            authSection.style.display = 'flex';
+            mainHeader.style.display = 'none'; // Hide header for auth page
+            mainNavHorizontal.style.display = 'none'; // Hide horizontal nav for auth page
+        } else {
+            // Fallback for other sections, e.g., Devices, Notifications, Security
+            // For now, these will show the dashboard if logged in, or redirect to auth if not.
+            if (isLoggedIn) {
+                dashboardContent.style.display = 'block';
+                mainHeader.style.display = 'flex';
+                mainNavHorizontal.style.display = 'flex';
+            } else {
+                authSection.style.display = 'flex';
+                mainHeader.style.display = 'none';
+                mainNavHorizontal.style.display = 'none';
+            }
+        }
+
+        // Update active class for horizontal navigation
+        mainNavListItems.forEach(li => li.classList.remove('active'));
+        const activeNavItem = document.querySelector(`.main-nav-horizontal li[data-section="${sectionId}"]`);
+        if (activeNavItem) {
+            activeNavItem.classList.add('active');
+        }
+    }
+
+    // Initial load: show auth section
+    showSection('users'); // 'users' section is where login/register is located
+
+    // Main horizontal navigation logic
+    mainNavListItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+
+        if (!isLoggedIn && section !== 'users' && section !== 'sign-out') {
+            alert('Please log in to access this section.');
+            showSection('users'); // Redirect to auth page
+            return;
+        }
+
+        if (section === 'sign-out') {
+            alert('Signing out...');
+            isLoggedIn = false;
+            showSection('users'); // Go back to login/register page
+        } else {
+            showSection(section);
+        }
+      });
+    });
+
+    // Function to handle room tab activation and content display
+    function activateRoomTab(roomName) {
+        if (!isLoggedIn) {
+            alert('Please log in to view room details.');
+            showSection('users');
+            return false;
+        }
+
+        const roomTabs = document.querySelectorAll('.room-tabs button');
+        let found = false;
+        roomTabs.forEach(tab => {
+            if (tab.dataset.roomTab.toLowerCase() === roomName.toLowerCase()) {
+                tab.classList.add('active');
+                found = true;
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        if (found) {
+            showSection('dashboard'); // Ensure dashboard is visible
+        }
+        return found;
+    }
+
+    // Room tabs functionality
+    const roomTabs = document.querySelectorAll('.room-tabs button');
+    roomTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        activateRoomTab(tab.dataset.roomTab);
+        console.log(`Room tab clicked: ${tab.dataset.roomTab}`);
+      });
+    });
+
+    // Settings actions (Save and Cancel buttons)
+    document.querySelector('.settings-actions .save').addEventListener('click', () => {
+      alert('Settings saved!');
+      // In a real app, you would save settings and then navigate back to dashboard
+      if (isLoggedIn) {
+          showSection('dashboard');
+      } else {
+          showSection('users');
+      }
+    });
+
+    document.querySelector('.settings-actions .cancel').addEventListener('click', () => {
+      alert('Settings changes cancelled!');
+      // In a real app, you would navigate back to dashboard
+      if (isLoggedIn) {
+          showSection('dashboard');
+      } else {
+          showSection('users');
+      }
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        const query = searchInput.value.trim();
+        if (query) {
+          const roomFound = activateRoomTab(query);
+          if (!roomFound) {
+            alert(`No room found matching "${query}". Please try "Bedroom", "Bathroom", "Living room", "Kitchen", "Dining room", or "Entrance".`);
+          }
+          searchInput.value = '';
+        } else {
+          alert('Please enter a search query (e.g., "Bedroom").');
+        }
+      }
+    });
+
+    // Auth form submission handlers
+    document.querySelector('.login-form button').addEventListener('click', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        // Login: email must be "reethu@gmail.com", password can be any non-empty string
+        if (email.trim() === 'reethu@gmail.com' && password.trim() !== '') {
+            alert(`Login successful! Welcome, ${email}.`);
+            isLoggedIn = true; // Set logged in state
+            showSection('dashboard'); // Redirect to dashboard
+        } else {
+            alert('Invalid email or password. Please use "reethu@gmail.com" and any non-empty password.');
+        }
+    });
+
+    document.querySelector('.register-form button').addEventListener('click', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (email.trim() === '' || password.trim() === '' || confirmPassword.trim() === '') {
+            alert('Please fill in all registration fields.');
+            return;
+        }
+
+        // Registration: password must be "reethu@2004", email can be any non-empty string
+        const requiredPassword = 'reethu@2004';
+
+        if (password === requiredPassword && confirmPassword === requiredPassword) {
+            alert(`Registration successful for ${email}! Please log in.`);
+            // After registration, stay on the auth section for login
+            document.getElementById('login-email').value = email; // Pre-fill login email
+            document.getElementById('login-password').value = ''; // Clear password
+            showSection('users');
+        } else if (password !== requiredPassword) {
+            alert('Password must be "reethu@2004".');
+        } else if (password !== confirmPassword) {
+            alert('Passwords do not match.');
+        }
+    });
+
+  </script>
+</body>
+</html>
